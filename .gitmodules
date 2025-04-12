@@ -1,0 +1,3 @@
+[submodule "bitbucket-server-mcp-server"]
+	path = bitbucket-server-mcp-server
+	url = https://github.com/username/bitbucket-server-mcp-server.git
