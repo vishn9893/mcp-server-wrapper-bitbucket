@@ -1,117 +1,78 @@
+# Bitbucket MCP Server — Native Python
 
----
+A self-contained Model Context Protocol (MCP) server for Bitbucket Server/Data Center, implemented entirely in Python.
 
-### ✅ `README.md`
+The previous version was a FastAPI wrapper around a Node.js MCP server. This version removes that architecture: there is no npm build, Node.js runtime, or JavaScript submodule.
 
-```md
-# Bitbucket MCP Server - FastAPI Wrapper
+## Requirements
 
-This project is a Python-based FastAPI wrapper around a TypeScript MCP (Model Context Protocol) server for managing Bitbucket Server pull requests. It bridges the original MCP server with a modern HTTP/REST interface.
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/)
+- Bitbucket Server/Data Center
+- A Bitbucket access token, or username/password
 
-![FastAPI](https://img.shields.io/badge/FastAPI-API-green.svg)
-![Node.js](https://img.shields.io/badge/Node.js-MCP-yellow.svg)
-![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)
-
----
-
-## 🚀 Features
-
-- Launches the MCP server (written in Node.js)
-- Communicates over stdio for performance & flexibility
-- Exposes clean REST endpoints via FastAPI
-- Auto-generated OpenAPI docs
-- Docker-ready
-
----
-
-## 🧩 Endpoints
-
-| Method | Path                    | Description                 |
-|--------|-------------------------|-----------------------------|
-| POST   | `/create-pull-request` | Create a new pull request   |
-| POST   | `/get-pull-request`    | Retrieve a PR's details     |
-| POST   | `/merge-pull-request`  | Merge a pull request        |
-| POST   | `/decline-pull-request`| Decline a pull request      |
-| POST   | `/add-comment`         | Add comment to a PR         |
-| POST   | `/get-diff`            | Get diff of a pull request  |
-| POST   | `/get-reviews`         | Fetch review history        |
-| POST   | `/mcp`                 | Direct MCP protocol access  |
-
-📘 Swagger UI available at: [http://localhost:8000/docs](http://localhost:8000/docs)
-
----
-
-## 🧰 Requirements
-
-- Python 3.10+
-- Node.js 18+
-- Bitbucket Server instance + token
-- (Optional) Docker
-
----
-
-## 🔧 Setup
-
-### 1. Install Python dependencies
+## Quick start
 
 ```bash
-pip install -r requirements.txt
+uv sync
+export BITBUCKET_URL=https://bitbucket.example.com
+export BITBUCKET_TOKEN=your-token
+uv run bitbucket-mcp
 ```
 
-### 2. Install & Build MCP Server (Node.js)
+The default MCP transport is stdio, making it suitable for MCP clients that launch local servers.
+
+## Configuration
+
+| Variable | Required | Description |
+|---|---|---|
+| `BITBUCKET_URL` | yes | Base URL of Bitbucket Server/Data Center |
+| `BITBUCKET_TOKEN` | one auth method | Bearer access token |
+| `BITBUCKET_USERNAME` | one auth method | Basic-auth username |
+| `BITBUCKET_PASSWORD` | one auth method | Basic-auth password |
+| `BITBUCKET_VERIFY_SSL` | no | Set to `false` only when TLS verification must be disabled |
+
+## MCP tools
+
+- `create_pull_request`
+- `get_pull_request`
+- `merge_pull_request`
+- `decline_pull_request`
+- `add_comment`
+- `get_diff`
+- `get_reviews`
+
+All tools call Bitbucket's REST API directly from Python.
+
+## Development
 
 ```bash
-npm install
-npm run build
+uv sync --dev
+uv run pytest
+uv run bitbucket-mcp
 ```
 
-### 3. Start the FastAPI Server
+The project uses a `src/` layout and keeps runtime dependencies in `pyproject.toml` so `uv.lock` can provide reproducible environments.
 
-```bash
-uvicorn app.main:app --reload
+## Architecture
+
+```text
+MCP client
+   |
+   | MCP / stdio
+   v
+bitbucket_mcp.server
+   |
+   v
+bitbucket_mcp.client
+   |
+   | HTTPS REST API
+   v
+Bitbucket Server / Data Center
 ```
 
----
+No Node.js process or subprocess bridge is involved.
 
-## 🐳 Docker
+## License
 
-To run everything inside Docker:
-
-```bash
-docker build -t bitbucket-mcp-wrapper .
-docker run -p 8000:8000 bitbucket-mcp-wrapper
-```
-
----
-
-## 🌍 Environment Variables
-
-Set these to configure the Bitbucket MCP server:
-
-```env
-BITBUCKET_URL=https://your-bitbucket-server.com
-BITBUCKET_TOKEN=your-access-token
-# Or use BITBUCKET_USERNAME + BITBUCKET_PASSWORD
-```
-
----
-
-## 📂 Project Structure
-
-```
-mcp_uv_wrapper/
-├── app/
-│   ├── main.py         # FastAPI entry point
-│   └── mcp_bridge.py   # Communicates with MCP server
-├── requirements.txt
-└── Dockerfile
-```
-
----
-
-## 🧑‍💻 Maintainer
-
-This wrapper was generated and managed via AI assistance.  
-Feel free to fork, open issues, or contribute!
-
----
+Apache-2.0
