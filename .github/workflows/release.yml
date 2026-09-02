@@ -4,12 +4,15 @@ on:
   push:
     tags:
       - "v*"
+      - "jira-v*"
+      - "confluence-v*"
 
 jobs:
-  publish:
-    name: Publish package
+  publish-bitbucket:
+    name: Publish Bitbucket package
     runs-on: ubuntu-latest
     environment: pypi
+    if: startsWith(github.ref_name, 'v')
     permissions:
       contents: read
       id-token: write
@@ -27,3 +30,59 @@ jobs:
 
       - name: Publish distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-jira:
+    name: Publish Jira package
+    runs-on: ubuntu-latest
+    environment: pypi
+    if: startsWith(github.ref_name, 'jira-v')
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: jira-mcp
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Build Jira distribution
+        run: uv build
+
+      - name: Publish Jira distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: jira-mcp/dist/
+
+  publish-confluence:
+    name: Publish Confluence package
+    runs-on: ubuntu-latest
+    environment: pypi
+    if: startsWith(github.ref_name, 'confluence-v')
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: confluence-mcp
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Build Confluence distribution
+        run: uv build
+
+      - name: Publish Confluence distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: confluence-mcp/dist/

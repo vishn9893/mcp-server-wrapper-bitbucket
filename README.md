@@ -119,7 +119,7 @@ cd jira-mcp
 uv build
 ```
 
-The root [Atlassian release workflow](.github/workflows/release-atlassian.yml) publishes packages through PyPI trusted publishing when matching tags are pushed:
+The root [release workflow](.github/workflows/release.yml) publishes packages through PyPI trusted publishing when matching tags are pushed:
 
 ```bash
 git tag jira-v0.1.0
