@@ -2,6 +2,15 @@
 
 Native Python MCP server for Bitbucket Server and Data Center. It uses the Bitbucket REST API directly with a single self-contained runtime.
 
+## Atlassian Cloud packages
+
+This repository also contains two independently buildable packages for Atlassian Cloud:
+
+- [`confluence-mcp/`](confluence-mcp/) — Confluence Cloud REST API v2, published as `confluence-mcp-atlassian`.
+- [`jira-mcp/`](jira-mcp/) — Jira Cloud REST API v3, published as `jira-mcp-atlassian`.
+
+Each folder has its own `pyproject.toml`, tests, environment example, README, and trusted-publishing workflow. To build one locally, run `uv build` from that folder. Configure the corresponding PyPI trusted publisher after moving the folder into its dedicated Git repository, then push a `v*` tag to publish.
+
 ## Install and run
 
 Install [uv](https://docs.astral.sh/uv/), copy `.env.example` to `.env`, and set the Bitbucket URL and credentials:
