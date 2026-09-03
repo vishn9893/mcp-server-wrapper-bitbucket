@@ -7,8 +7,8 @@ Native asynchronous Python MCP servers for Bitbucket Server/Data Center, Jira Cl
 | Package | API | PyPI name | Directory |
 | --- | --- | --- | --- |
 | Bitbucket | Server/Data Center REST API v1.0 | `bitbucket-mcp-atlassian` | repository root |
-| Jira | Cloud REST API v3 | `jira-mcp-atlassian` | [`jira-mcp/`](jira-mcp/) |
-| Confluence | Cloud REST API v2 | `confluence-mcp-atlassian` | [`confluence-mcp/`](confluence-mcp/) |
+| Jira | Cloud REST API v3 / Server-DC REST API v2 | `jira-mcp-atlassian` | [`jira-mcp/`](jira-mcp/) |
+| Confluence | Cloud REST API v2 / Server-DC REST API v2 | `confluence-mcp-atlassian` | [`confluence-mcp/`](confluence-mcp/) |
 
 The Jira and Confluence packages are self-contained projects with their own `pyproject.toml`, tests, environment example, and release metadata.
 
@@ -89,9 +89,9 @@ Each server supports `stdio`, `sse`, and `streamable-http` transports through it
 
 Bitbucket provides projects, repositories, pull requests, comments, reviews, diffs, branches, commits, files, users, permissions, and build-status tools.
 
-Jira provides JQL issue search, issue retrieval and updates, issue creation/deletion, comments, transitions, assignments, projects, and issue types. Plain-text descriptions and comments are converted to Atlassian Document Format.
+Jira provides JQL issue search, issue retrieval and updates, issue creation/deletion, comments, transitions, assignments, projects, and issue types. Cloud uses ADF for rich text; Server/Data Center uses Jira wiki markup.
 
-Confluence provides page listing, retrieval, creation, updates, deletion, spaces, child pages, labels, and comments.
+Confluence provides page listing, retrieval, creation, updates, deletion, spaces, child pages, labels, and comments on both Cloud and Server/Data Center.
 
 ## Development and testing
 

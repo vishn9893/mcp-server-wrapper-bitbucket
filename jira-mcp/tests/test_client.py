@@ -6,6 +6,7 @@ from jira_mcp.config import Settings
 from jira_mcp import tools
 
 def settings(**kwargs): return Settings(url="https://site.atlassian.net", email="a@b.test", token="secret", **kwargs)
+def dc_settings(**kwargs): return Settings(url="https://jira.example.local", personal_token="secret", **kwargs)
 
 @pytest.mark.asyncio
 async def test_search_uses_jql_endpoint_and_auth():
@@ -22,3 +23,13 @@ async def test_error_contains_message():
     async with httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(400, json={"errorMessages": ["Bad JQL"]})), base_url="https://site.atlassian.net/rest/api/3") as http:
         async with JiraClient(settings(), http) as client:
             with pytest.raises(JiraError, match="Bad JQL"): await client.get("/issue/DEMO-1")
+
+@pytest.mark.asyncio
+async def test_data_center_uses_v2_search_and_bearer_auth():
+    seen = []
+    def handler(request): seen.append(request); return httpx.Response(200, json={"issues": []})
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler), base_url="https://jira.example.local/rest/api/2") as http:
+        async with JiraClient(dc_settings(), http) as client: await tools.search_issues(client, "project = DEMO")
+    assert str(seen[0].url).startswith("https://jira.example.local/rest/api/2/search?")
+    assert seen[0].headers["authorization"] == "Bearer secret"
+    assert "jql=project+%3D+DEMO" in str(seen[0].url)
